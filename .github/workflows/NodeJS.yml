@@ -30,12 +30,6 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Setup NPM
-        shell: bash
-        run: ./scripts/node_version.sh upload
-        env:
-          DUCKDB_NODE_BUILD_CACHE: 0  # create a standalone package
-          NODE_AUTH_TOKEN: ${{secrets.NODE_AUTH_TOKEN}}
 
   linux-nodejs:
     name: node.js Linux
@@ -48,7 +42,7 @@ jobs:
     strategy:
       matrix:
         # node.js current support policy to be found at https://github.com/duckdb/duckdb-node/tree/main/#Supported-Node-versions
-        node: [ '12', '14', '16', '17', '18', '19', '20', '21', '22']
+        node: [ '18']
         target_arch: [ x64, arm64 ]
         isRelease:
           - ${{ startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/main' }}
@@ -99,12 +93,6 @@ jobs:
           key: ${{ github.job }}
           save: ${{ ( github.ref == 'refs/heads/main' || github.repository != 'duckdb/duckdb-node' ) && ( matrix.node == '19' ) }}
 
-      - name: Setup
-        shell: bash
-        run: ./scripts/node_version.sh
-        env:
-          DUCKDB_NODE_BUILD_CACHE: 0  # create a standalone package
-          NODE_AUTH_TOKEN: ${{secrets.NODE_AUTH_TOKEN}}
 
       - name: Validate Docs
         run: npx jsdoc-to-markdown --files lib/*.js >> $GITHUB_STEP_SUMMARY
@@ -123,7 +111,7 @@ jobs:
     strategy:
       matrix:
         target_arch: [ arm64 ]
-        node: [ '16', '17', '18', '19', '20', '21', '22']
+        node: [ '18']
         isRelease:
           - ${{ startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/main' }}
         exclude:
@@ -168,11 +156,6 @@ jobs:
           brew uninstall --ignore-dependencies curl
           which curl
 
-      - name: Setup
-        shell: bash
-        run: ./scripts/node_version.sh
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.NODE_AUTH_TOKEN}}
 
       - name: Node ${{ matrix.node }}
         shell: bash
@@ -186,7 +169,7 @@ jobs:
     strategy:
       matrix:
         target_arch: [ x64 ]
-        node: [ '16', '17', '18', '19', '20', '21', '22']
+        node: [ '18']
         isRelease:
           - ${{ startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/main' }}
         exclude:
@@ -231,11 +214,6 @@ jobs:
           brew uninstall --ignore-dependencies curl
           which curl
 
-      - name: Setup
-        shell: bash
-        run: ./scripts/node_version.sh
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.NODE_AUTH_TOKEN}}
 
       - name: Node ${{ matrix.node }}
         shell: bash
@@ -251,7 +229,7 @@ jobs:
 
     strategy:
       matrix:
-        node: [ '16', '17', '18', '19', '20', '21', '22' ]
+        node: [ '18']
         isRelease:
           - ${{ startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/main' }}
         exclude:
@@ -297,11 +275,6 @@ jobs:
         run: |
           choco install visualstudio2019-workload-vctools -y
 
-      - name: Node Version
-        shell: bash
-        run: ./scripts/node_version.sh
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.NODE_AUTH_TOKEN}}
 
       - name: Setup Ccache
         uses: hendrikmuhs/ccache-action@main
